@@ -1,8 +1,8 @@
 'use client';
 
-import {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
-import Autosuggest from 'react-autosuggest';
+import Autosuggest, { SuggestionsFetchRequestedParams } from 'react-autosuggest';
 
 const api = axios.create({
     baseURL: 'http://localhost:5000',
@@ -21,28 +21,59 @@ export default function Home() {
     const [albumSuggestions, setAlbumSuggestions] = useState([]);
     const [songSuggestions, setSongSuggestions] = useState([]);
 
-    const onSuggestionsFetchRequested = ({ value, setSuggestions, items }) => {
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const [artistResponse, albumsResponse, songsResponse] = await Promise.all([
+                    api.get('/api/artists'),
+                    api.get('/api/albums'),
+                    api.get('/api/songs')
+                ]);
+                setArtists(artistResponse.data);
+                setAlbums(albumsResponse.data);
+                setSongs(songsResponse.data);
+            } catch (e) {
+                console.error('Error fetching data:', e);
+            }
+        };
+        fetchData();
+    }, []);
+
+    const onSuggestionsFetchRequested = ({ value }: SuggestionsFetchRequestedParams, setSuggestions: (suggestions: any[]) => void, items: any[], property: string) => {
         const inputValue = value.trim().toLowerCase();
         const inputLength = inputValue.length;
 
         const suggestions = inputLength === 0 ? [] : items.filter(item =>
-            item.name && item.name.toLowerCase().includes(inputValue)
+            item[property] && item[property].toLowerCase().includes(inputValue)
         );
 
         setSuggestions(suggestions);
     };
 
-    const onSuggestionsClearRequested = (setSuggestions) => {
+    const onArtistSuggestionsFetchRequested = (params: SuggestionsFetchRequestedParams) => {
+        onSuggestionsFetchRequested(params, setArtistSuggestions, artists, 'name');
+    };
+
+    const onAlbumSuggestionsFetchRequested = (params: SuggestionsFetchRequestedParams) => {
+        onSuggestionsFetchRequested(params, setAlbumSuggestions, albums, 'title');
+    };
+
+    const onSongSuggestionsFetchRequested = (params: SuggestionsFetchRequestedParams) => {
+        onSuggestionsFetchRequested(params, setSongSuggestions, songs, 'title');
+    };
+
+    const onSuggestionsClearRequested = (setSuggestions: (suggestions: any[]) => void) => {
         setSuggestions([]);
     };
 
-    const getSuggestionValue = suggestion => suggestion.name;
+    const getSuggestionValue = (suggestion: any) => suggestion.name;
+    const renderSuggestion = (suggestion: any) => <div>{suggestion.name}</div>;
 
-    const renderSuggestion = suggestion => (
-        <div>
-            {suggestion.name}
-        </div>
-    );
+    const getAlbumSuggestionValue = (suggestion: any) => suggestion.title;
+    const renderAlbumSuggestion = (suggestion: any) => <div>{suggestion.title}</div>;
+
+    const getSongSuggestionValue = (suggestion: any) => suggestion.title;
+    const renderSongSuggestion = (suggestion: any) => <div>{suggestion.title}</div>;
 
     const filteredArtists = artists.filter(artist =>
         artist.name.toLowerCase().includes(searchArtist.toLowerCase())
@@ -56,102 +87,84 @@ export default function Home() {
         song.title.toLowerCase().includes(searchSong.toLowerCase())
     );
 
-    useEffect(() => {
-        const fetchData =async () => {
-            try {
-                const [artistRespone, albumsResponse, songsResponse] = await Promise.all([
-                    api.get('/api/artists'),
-                    api.get('/api/albums'),
-                    api.get('/api/songs')
-                ]);
-                setArtists(artistRespone.data);
-                setAlbums(albumsResponse.data);
-                setSongs(songsResponse.data);
-            }catch (e){
-                console.error('Error fetching data:', e);
-            }
-        };
-        fetchData();
-    }, []);
-
-  return (
-      <div className="p-6 bg-gray-100">
-          <h1 className="text-3xl font-bold mb-6 text-gray-800">Music Library</h1>
-          <div className="overflow-x-auto shadow-md rounded-lg">
-              <table className="min-w-full bg-white">
-                  <thead className="bg-gray-200">
-                  <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-                          Artist
-                          <Autosuggest
-                              suggestions={artistSuggestions}
-                              onSuggestionsFetchRequested={({ value }) => onSuggestionsFetchRequested({ value, setSuggestions: setArtistSuggestions, items: artists })}
-                              onSuggestionsClearRequested={() => onSuggestionsClearRequested(setArtistSuggestions)}
-                              getSuggestionValue={getSuggestionValue}
-                              renderSuggestion={renderSuggestion}
-                              inputProps={{
-                                  placeholder: 'Search Artist',
-                                  value: searchArtist,
-                                  onChange: (e, { newValue }) => setSearchArtist(newValue)
-                              }}
-                              theme={{
-                                  input: 'mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'
-                              }}
-                          />
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-                          Album
-                          <Autosuggest
-                              suggestions={albumSuggestions}
-                              onSuggestionsFetchRequested={({ value }) => onSuggestionsFetchRequested({ value, setSuggestions: setAlbumSuggestions, items: albums })}
-                              onSuggestionsClearRequested={() => onSuggestionsClearRequested(setAlbumSuggestions)}
-                              getSuggestionValue={suggestion => suggestion.title}
-                              renderSuggestion={suggestion => <div>{suggestion.title}</div>}
-                              inputProps={{
-                                  placeholder: 'Search Album',
-                                  value: searchAlbum,
-                                  onChange: (e, { newValue }) => setSearchAlbum(newValue)
-                              }}
-                              theme={{
-                                  input: 'mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'
-                              }}
-                          />
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-                          Song
-                          <Autosuggest
-                              suggestions={songSuggestions}
-                              onSuggestionsFetchRequested={({ value }) => onSuggestionsFetchRequested({ value, setSuggestions: setSongSuggestions, items: songs })}
-                              onSuggestionsClearRequested={() => onSuggestionsClearRequested(setSongSuggestions)}
-                              getSuggestionValue={suggestion => suggestion.title}
-                              renderSuggestion={suggestion => <div>{suggestion.title}</div>}
-                              inputProps={{
-                                  placeholder: 'Search Song',
-                                  value: searchSong,
-                                  onChange: (e, { newValue }) => setSearchSong(newValue)
-                              }}
-                              theme={{
-                                  input: 'mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'
-                              }}
-                          />
-                      </th>
-                  </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-200">
-                  {filteredArtists.map(artist =>
-                      filteredAlbums.filter(album => album.artistId === artist.id).map(album =>
-                          filteredSongs.filter(song => song.albumId === album.id).map((song, index) => (
-                              <tr key={`${artist.id}-${album.id}-${song.id}`} className="hover:bg-gray-50">
-                                  <td className="px-6 py-4 whitespace-nowrap text-gray-800">{artist.name}</td>
-                                  <td className="px-6 py-4 whitespace-nowrap text-gray-800">{album.title}</td>
-                                  <td className="px-6 py-4 whitespace-nowrap text-gray-800">{song.title}</td>
-                              </tr>
-                          ))
-                      )
-                  )}
-                  </tbody>
-              </table>
-          </div>
-      </div>
-  );
+    return (
+        <div className="p-6 bg-gray-100">
+            <h1 className="text-3xl font-bold mb-6 text-gray-800">Music Library</h1>
+            <div className="overflow-x-auto shadow-md rounded-lg">
+                <table className="min-w-full bg-white">
+                    <thead className="bg-gray-200">
+                    <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                            Artist
+                            <Autosuggest
+                                suggestions={artistSuggestions}
+                                onSuggestionsFetchRequested={onArtistSuggestionsFetchRequested}
+                                onSuggestionsClearRequested={() => onSuggestionsClearRequested(setArtistSuggestions)}
+                                getSuggestionValue={getSuggestionValue}
+                                renderSuggestion={renderSuggestion}
+                                inputProps={{
+                                    placeholder: 'Search Artist',
+                                    value: searchArtist,
+                                    onChange: (e, { newValue }) => setSearchArtist(newValue)
+                                }}
+                                theme={{
+                                    input: 'mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'
+                                }}
+                            />
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                            Album
+                            <Autosuggest
+                                suggestions={albumSuggestions}
+                                onSuggestionsFetchRequested={onAlbumSuggestionsFetchRequested}
+                                onSuggestionsClearRequested={() => onSuggestionsClearRequested(setAlbumSuggestions)}
+                                getSuggestionValue={getAlbumSuggestionValue}
+                                renderSuggestion={renderAlbumSuggestion}
+                                inputProps={{
+                                    placeholder: 'Search Album',
+                                    value: searchAlbum,
+                                    onChange: (e, { newValue }) => setSearchAlbum(newValue)
+                                }}
+                                theme={{
+                                    input: 'mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'
+                                }}
+                            />
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                            Song
+                            <Autosuggest
+                                suggestions={songSuggestions}
+                                onSuggestionsFetchRequested={onSongSuggestionsFetchRequested}
+                                onSuggestionsClearRequested={() => onSuggestionsClearRequested(setSongSuggestions)}
+                                getSuggestionValue={getSongSuggestionValue}
+                                renderSuggestion={renderSongSuggestion}
+                                inputProps={{
+                                    placeholder: 'Search Song',
+                                    value: searchSong,
+                                    onChange: (e, { newValue }) => setSearchSong(newValue)
+                                }}
+                                theme={{
+                                    input: 'mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'
+                                }}
+                            />
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-200">
+                    {filteredArtists.map(artist =>
+                        filteredAlbums.filter(album => album.artistId === artist.id).map(album =>
+                            filteredSongs.filter(song => song.albumId === album.id).map((song, index) => (
+                                <tr key={`${artist.id}-${album.id}-${song.id}`} className="hover:bg-gray-50">
+                                    <td className="px-6 py-4 whitespace-nowrap text-gray-800">{artist.name}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-gray-800">{album.title}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-gray-800">{song.title}</td>
+                                </tr>
+                            ))
+                        )
+                    )}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    );
 }
