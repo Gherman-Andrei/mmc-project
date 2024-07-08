@@ -17,7 +17,7 @@ model Artist {
 model Album {
   id          Int      @id @default(autoincrement())
   title       String
-  description String
+  description String   @db.Text
   artistId    Int
   artist      Artist   @relation(fields: [artistId], references: [id])
   songs       Song[]
