@@ -36,5 +36,8 @@ async function importData(){
         console.log('Data imported successful');
     }catch (e){
         console.error('Data import error', e);
-    }
+    }finally {
+    await prisma.disconnect;
 }
+}
+importData();
