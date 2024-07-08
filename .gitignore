@@ -1,0 +1,8 @@
+node_modules/
+npm-debug.log
+/.idea
+/public
+.env
+build/
+prisma/.env
+prisma/migrations/
