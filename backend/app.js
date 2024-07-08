@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors';
 import connectDB from "./config/dbConfig.js";
 import bodyParser from "body-parser";
 import artistRoutes from "./routes/artistRoutes.js";
@@ -6,6 +7,7 @@ import albumRoutes from "./routes/albumRoutes.js";
 import songRoutes from "./routes/songRoutes.js";
 
 const app = express();
+app.use(cors());
 app.use(bodyParser.json());
 
 app.use('/api/artists', artistRoutes);

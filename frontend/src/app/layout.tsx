@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Figtree } from "next/font/google";
 import "./globals.css";
+import Link from "next/link";
 
-const inter = Inter({ subsets: ["latin"] });
+const font = Figtree({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -15,8 +16,30 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={inter.className}>{children}</body>
-    </html>
+      <html lang="en">
+      <body className={font.className}>
+      <div className="min-h-screen flex flex-col">
+        <header className="bg-gray-800 text-white p-4">
+          <div className="container mx-auto">
+            <h1 className="text-3xl">Music Library</h1>
+            <nav className="mt-2">
+              <Link href="/" className="mr-4">Home</Link>
+              <Link href="/artists" className="mr-4">Artists</Link>
+              <Link href="/albums" className="mr-4">Albums</Link>
+              <Link href="/songs">Songs</Link>
+            </nav>
+          </div>
+        </header>
+        <main className="flex-grow container mx-auto p-4">
+          {children}
+        </main>
+        <footer className="bg-gray-800 text-white p-4 text-center">
+          <div className="container mx-auto">
+            Project for MMC by Andrei Gherman
+          </div>
+        </footer>
+      </div>
+      </body>
+      </html>
   );
 }
