@@ -22,6 +22,8 @@ export default function Home() {
     const [albumSuggestions, setAlbumSuggestions] = useState([]);
     const [songSuggestions, setSongSuggestions] = useState([]);
 
+    const [showDropdown, setShowDropdown] = useState(false);
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -101,11 +103,27 @@ export default function Home() {
         <div className="p-6 bg-gray-100">
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-3xl font-bold text-gray-800">Music Library</h1>
-                <Link href="/add">
-                    <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700">
+                <div className="relative">
+                    <button
+                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
+                        onClick={() => setShowDropdown(!showDropdown)}
+                    >
                         Add
                     </button>
-                </Link>
+                    {showDropdown && (
+                        <div className="absolute right-0 mt-2 py-2 w-48 bg-white rounded-md shadow-xl z-20">
+                            <Link href="artist/add" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                Add Artist
+                            </Link>
+                            <Link href="/album/add" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                Add Album
+                            </Link>
+                            <Link href="/song/add" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                Add Song
+                            </Link>
+                        </div>
+                    )}
+                </div>
             </div>
             <div className="overflow-x-auto shadow-md rounded-lg">
                 <table className="min-w-full bg-white">
