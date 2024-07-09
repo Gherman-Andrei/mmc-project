@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Autosuggest, { SuggestionsFetchRequestedParams } from 'react-autosuggest';
 import Link from 'next/link';
@@ -22,7 +22,6 @@ export default function Home() {
     const [albumSuggestions, setAlbumSuggestions] = useState([]);
     const [songSuggestions, setSongSuggestions] = useState([]);
 
-    const [showDropdown, setShowDropdown] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -54,14 +53,17 @@ export default function Home() {
     };
 
     const onArtistSuggestionsFetchRequested = (params: SuggestionsFetchRequestedParams) => {
+        // @ts-ignore
         onSuggestionsFetchRequested(params, setArtistSuggestions, artists, 'name');
     };
 
     const onAlbumSuggestionsFetchRequested = (params: SuggestionsFetchRequestedParams) => {
+        // @ts-ignore
         onSuggestionsFetchRequested(params, setAlbumSuggestions, albums, 'title');
     };
 
     const onSongSuggestionsFetchRequested = (params: SuggestionsFetchRequestedParams) => {
+        // @ts-ignore
         onSuggestionsFetchRequested(params, setSongSuggestions, songs, 'title');
     };
 
@@ -78,6 +80,7 @@ export default function Home() {
     const getSongSuggestionValue = (suggestion: any) => suggestion.title;
     const renderSongSuggestion = (suggestion: any) => <div>{suggestion.title}</div>;
 
+    // @ts-ignore
     const filteredArtists = artists.filter(artist =>
         artist.name.toLowerCase().includes(searchArtist.toLowerCase())
     );
@@ -99,30 +102,24 @@ export default function Home() {
         suggestionHighlighted: 'bg-gray-200'
     };
 
-    return (
+    return  (
         <div className="p-6 bg-gray-100">
             <div className="flex justify-between items-center mb-6">
-                <h1 className="text-3xl font-bold text-gray-800">Music Library</h1>
+                <div>
+                    <h1 className="text-3xl font-bold text-gray-800">Music Library</h1>
+                    <nav className="mt-2">
+                        <Link href="/artist" className="mr-4 text-blue-500 hover:underline">Artists</Link>
+                        <Link href="/album" className="mr-4 text-blue-500 hover:underline">Albums</Link>
+                        <Link href="/song" className="text-blue-500 hover:underline">Songs</Link>
+                    </nav>
+                </div>
                 <div className="relative">
+                    <Link href="/song/add">
                     <button
-                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
-                        onClick={() => setShowDropdown(!showDropdown)}
-                    >
+                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"                    >
                         Add
                     </button>
-                    {showDropdown && (
-                        <div className="absolute right-0 mt-2 py-2 w-48 bg-white rounded-md shadow-xl z-20">
-                            <Link href="artist/add" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                Add Artist
-                            </Link>
-                            <Link href="/album/add" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                Add Album
-                            </Link>
-                            <Link href="/song/add" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                Add Song
-                            </Link>
-                        </div>
-                    )}
+                    </Link>
                 </div>
             </div>
             <div className="overflow-x-auto shadow-md rounded-lg">

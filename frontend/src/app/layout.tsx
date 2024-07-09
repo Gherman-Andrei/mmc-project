@@ -19,17 +19,6 @@ export default function RootLayout({
       <html lang="en">
       <body className={font.className}>
       <div className="min-h-screen flex flex-col">
-        <header className="bg-gray-800 text-white p-4">
-          <div className="container mx-auto">
-            <h1 className="text-3xl">Music Library</h1>
-            <nav className="mt-2">
-              <Link href="/" className="mr-4">Home</Link>
-              <Link href="/artist" className="mr-4">Artists</Link>
-              <Link href="/album" className="mr-4">Albums</Link>
-              <Link href="/song">Songs</Link>
-            </nav>
-          </div>
-        </header>
         <main className="flex-grow container mx-auto p-4">
           {children}
         </main>
