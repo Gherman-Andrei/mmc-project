@@ -53,3 +53,15 @@ export async function deleteArtist(required,response){
         response.status(500).json({message:e.message});
     }
 }
+// GET ALBUMS BY ID
+
+export async function getAlbumsByArtistId(required,response){
+    try{
+       const albums = await prisma.album.findMany({
+            where: { artistId: parseInt(required.params.id) }
+        });
+        response.json(albums);
+    }catch (e){
+        response.status(500).json({message:e.message});
+    }
+}
