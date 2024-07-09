@@ -87,12 +87,17 @@ export default function Home() {
         <div className="p-6 bg-gray-100">
             <div className="flex justify-between items-center mb-6">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-800">Music Library</h1>
+                    <h1 className="text-3xl font-bold text-gray-800">Artist List</h1>
                 </div>
                 <div className="relative">
-                    <Link href="/song/add">
+                    <Link href="/artist/add">
                         <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700">
-                            Add
+                            Add Artist
+                        </button>
+                    </Link>
+                    <Link href="/">
+                        <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 ml-2">
+                            Home
                         </button>
                     </Link>
                 </div>

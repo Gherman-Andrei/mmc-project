@@ -110,7 +110,6 @@ export default function Home() {
                     <nav className="mt-2">
                         <Link href="/artist" className="mr-4 text-blue-500 hover:underline">Artists</Link>
                         <Link href="/album" className="mr-4 text-blue-500 hover:underline">Albums</Link>
-                        <Link href="/song" className="text-blue-500 hover:underline">Songs</Link>
                     </nav>
                 </div>
                 <div className="relative">
