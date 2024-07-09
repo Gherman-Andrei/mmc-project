@@ -88,6 +88,15 @@ export default function Home() {
         song.title.toLowerCase().includes(searchSong.toLowerCase())
     );
 
+    const theme = {
+        container: 'relative',
+        input: 'mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm',
+        suggestionsContainer: 'absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg',
+        suggestionsList: 'max-h-60 overflow-auto',
+        suggestion: 'cursor-pointer',
+        suggestionHighlighted: 'bg-gray-200'
+    };
+
     return (
         <div className="p-6 bg-gray-100">
             <div className="flex justify-between items-center mb-6">
@@ -115,9 +124,7 @@ export default function Home() {
                                     value: searchArtist,
                                     onChange: (e, { newValue }) => setSearchArtist(newValue)
                                 }}
-                                theme={{
-                                    input: 'mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'
-                                }}
+                                theme={theme}
                             />
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
@@ -133,9 +140,7 @@ export default function Home() {
                                     value: searchAlbum,
                                     onChange: (e, { newValue }) => setSearchAlbum(newValue)
                                 }}
-                                theme={{
-                                    input: 'mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'
-                                }}
+                                theme={theme}
                             />
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
@@ -151,26 +156,57 @@ export default function Home() {
                                     value: searchSong,
                                     onChange: (e, { newValue }) => setSearchSong(newValue)
                                 }}
-                                theme={{
-                                    input: 'mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'
-                                }}
-
+                                theme={theme}
                             />
                         </th>
                     </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
-                    {filteredArtists.map(artist =>
-                        filteredAlbums.filter(album => album.artistId === artist.id).map(album =>
-                            filteredSongs.filter(song => song.albumId === album.id).map((song, index) => (
-                                <tr key={`${artist.id}-${album.id}-${song.id}`} className="hover:bg-gray-50">
+                    {filteredArtists.map(artist => {
+                        const artistAlbums = filteredAlbums.filter(album => album.artistId === artist.id);
+                        if (artistAlbums.length === 0) {
+                            return (
+                                <tr key={artist.id} className="hover:bg-gray-50">
                                     <td className="px-6 py-4 whitespace-nowrap text-gray-800">{artist.name}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-gray-800">{album.title}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-gray-800">{song.title}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-gray-800">No album</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-gray-800">No song</td>
                                 </tr>
-                            ))
-                        )
-                    )}
+                            );
+                        } else {
+                            return artistAlbums.map(album => {
+                                const albumSongs = filteredSongs.filter(song => song.albumId === album.id);
+                                if (albumSongs.length === 0) {
+                                    return (
+                                        <tr key={`${artist.id}-${album.id}`} className="hover:bg-gray-50">
+                                            <td className="px-6 py-4 whitespace-nowrap text-gray-800">{artist.name}</td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-gray-800">{album.title}</td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-gray-800">No song</td>
+                                        </tr>
+                                    );
+                                } else {
+                                    return albumSongs.map(song => (
+                                        <tr key={`${artist.id}-${album.id}-${song.id}`} className="hover:bg-gray-50">
+                                            <td className="px-6 py-4 whitespace-nowrap text-gray-800">
+                                                <Link href={`/artist/${artist.id}`}>
+                                                    {artist.name}
+                                                </Link>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-gray-800">
+                                                <Link href={`/album/${album.id}`}>
+                                                    {album.title}
+                                                </Link>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-gray-800">
+                                                <Link href={`/song/${song.id}`}>
+                                                    {song.title}
+                                                </Link>
+                                            </td>
+                                        </tr>
+                                    ));
+                                }
+                            });
+                        }
+                    })}
                     </tbody>
                 </table>
             </div>
