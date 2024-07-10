@@ -19,7 +19,7 @@ model Album {
   title       String
   description String   @db.Text
   artistId    Int
-  artist      Artist   @relation(fields: [artistId], references: [id])
+  artist      Artist   @relation(fields: [artistId], references: [id], onDelete: Cascade)
   songs       Song[]
   @@index([artistId])
 }
@@ -29,6 +29,6 @@ model Song {
   title   String
   length  String
   albumId Int
-  album   Album  @relation(fields: [albumId], references: [id])
+  album   Album  @relation(fields: [albumId], references: [id], onDelete: Cascade)
   @@index([albumId])
 }
