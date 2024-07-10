@@ -4,10 +4,11 @@ This project consists of a backend API and a frontend web application for a Musi
 
 ## Prerequisites
 Before you begin, ensure you have the following installed:
-- Node.js (version 14 or higher recommended)
+- Node.js (Last Version)
 - npm (usually comes with Node.js)
 - Git
-- MySQL database with a MusicLibrary database created.
+- Any SQL server a MusicLibrary database created. 
+
 ##Backend Setup
 1. Clone the repository:
 git clone https://github.com/Gherman-Andrei/mmc-project.git
