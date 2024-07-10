@@ -70,7 +70,7 @@ export default function ArtistDetail() {
             <div className="flex items-center justify-between mb-4">
                 <h1 className="text-3xl font-bold text-gray-800">{artist.name}</h1>
                 <div>
-                    <Link href={`/artists/${id}/edit`}>
+                    <Link href={`/artist/${id}/edit`}>
                         <button className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-700 mr-2">
                             Update
                         </button>
