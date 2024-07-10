@@ -59,3 +59,16 @@ export async function deleteAlbum(required, response) {
         response.status(500).json({ message: e.message });
     }
 }
+
+
+export async function getSongsByAlbumId(req, res) {
+    try {
+        const albumId = parseInt(req.params.id);
+        const songs = await prisma.song.findMany({
+            where: { albumId: albumId }
+        });
+        res.json(songs);
+    } catch (e) {
+        res.status(500).json({ message: e.message });
+    }
+}
